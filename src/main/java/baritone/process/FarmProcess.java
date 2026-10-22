@@ -273,6 +273,12 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             }
         }
 
+        int immaturePotatoes = 0;
+        for (BlockPos pos : locations) {
+            if (ctx.world().getBlockState(pos).getBlock() == Blocks.POTATOES && !((CropBlock) Blocks.POTATOES).isMaxAge(ctx.world().getBlockState(pos))) {
+                immaturePotatoes++;
+            }
+        }
         baritone.getInputOverrideHandler().clearAllKeys();
         BetterBlockPos playerPos = ctx.playerFeet();
         double blockReachDistance = ctx.playerController().getBlockReachDistance();
@@ -346,6 +352,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
         }
 
         if (calcFailed) {
+            logDebug("Farm path calculation failed; scanned " + locations.size() + " blocks, mature crops " + toBreak.size() + ", immature potatoes " + immaturePotatoes + ", open farmland " + openFarmland.size() + ", open soul sand " + openSoulsand.size() + ", open jungle logs " + openLog.size() + ", bonemealable crops " + bonemealable.size());
             logDirect("Farm failed");
             if (Baritone.settings().notificationOnFarmFail.value) {
                 logNotification("Farm failed", true);
@@ -392,6 +399,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             }
         }
         if (goalz.isEmpty()) {
+            logDebug("Farm found no goals; scanned " + locations.size() + " blocks, mature crops " + toBreak.size() + ", immature potatoes " + immaturePotatoes + ", open farmland " + openFarmland.size() + " (plantable seed " + baritone.getInventoryBehavior().throwaway(false, this::isPlantable) + "), open soul sand " + openSoulsand.size() + " (nether wart " + baritone.getInventoryBehavior().throwaway(false, this::isNetherWart) + "), open jungle logs " + openLog.size() + " (cocoa beans " + baritone.getInventoryBehavior().throwaway(false, this::isCocoa) + "), bonemealable crops " + bonemealable.size() + " (bonemeal " + baritone.getInventoryBehavior().throwaway(false, this::isBoneMeal) + ")");
             logDirect("Farm failed");
             if (Baritone.settings().notificationOnFarmFail.value) {
                 logNotification("Farm failed", true);
