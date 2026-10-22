@@ -109,7 +109,7 @@ public class ToolSet {
             final TagKey<Item> tag = materialTagsPriorityList.get(i);
             if (itemStack.is(tag)) return i;
         }
-        return -1;
+        return Integer.MAX_VALUE;
     }
 
     public boolean hasSilkTouch(ItemStack stack) {
