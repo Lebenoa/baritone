@@ -18,6 +18,7 @@
 package baritone.utils;
 
 import baritone.Baritone;
+import baritone.api.utils.Helper;
 import net.minecraft.client.player.LocalPlayer;
 import net.minecraft.core.Holder;
 import net.minecraft.core.component.DataComponents;
@@ -168,29 +169,48 @@ public class ToolSet {
         boolean bestSilkTouch = false;
         boolean bestFortune = false;
         BlockState blockState = b.defaultBlockState();
+        boolean debug = Baritone.settings().toolDebug.value && Baritone.settings().chatDebug.value;
+        if (debug) {
+            Helper.HELPER.logDebug("AutoTool: " + blockState.getBlock() + (preferSilkTouch ? " [silk]" : "") + (preferFortune ? " [fortune]" : ""));
+        }
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.getInventory().getItem(i);
             if (!Baritone.settings().useSwordToMine.value && itemStack.is(ItemTags.SWORDS)) {
+                if (debug) {
+                    Helper.HELPER.logDebug("  " + i + " " + itemStack.getItem() + " SKIPPED (useSwordToMine=false)");
+                }
                 continue;
             }
 
             if (Baritone.settings().itemSaver.value && (itemStack.getDamageValue() + Baritone.settings().itemSaverThreshold.value) >= itemStack.getMaxDamage() && itemStack.getMaxDamage() > 1) {
+                if (debug) {
+                    Helper.HELPER.logDebug("  " + i + " " + itemStack.getItem() + " SKIPPED (itemSaver)");
+                }
                 continue;
             }
             double speed = calculateSpeedVsBlock(itemStack, blockState);
             boolean silkTouch = hasSilkTouch(itemStack);
             boolean fortune = hasFortune(itemStack);
+            int cost = getMaterialCost(itemStack);
+            if (debug) {
+                Helper.HELPER.logDebug("  " + i + " " + itemStack.getItem() + " speed=" + fmt(speed) + " cost=" + (cost == Integer.MAX_VALUE ? "-" : cost) + (silkTouch ? " silk" : "") + (fortune ? " fortune" : ""));
+            }
             if (speed > highestSpeed) {
+                if (debug) {
+                    Helper.HELPER.logDebug("    -> best (speed)");
+                }
                 highestSpeed = speed;
                 best = i;
-                lowestCost = getMaterialCost(itemStack);
+                lowestCost = cost;
                 bestSilkTouch = silkTouch;
                 bestFortune = fortune;
             } else if (speed == highestSpeed) {
-                int cost = getMaterialCost(itemStack);
                 if ((cost < lowestCost && (silkTouch || !bestSilkTouch)) ||
                         (preferSilkTouch && !bestSilkTouch && silkTouch) ||
                         (preferFortune && !bestFortune && fortune)) {
+                    if (debug) {
+                        Helper.HELPER.logDebug("    -> best (tie: " + (preferSilkTouch && !bestSilkTouch && silkTouch ? "silk" : (preferFortune && !bestFortune && fortune ? "fortune" : "cost")) + ")");
+                    }
                     highestSpeed = speed;
                     best = i;
                     lowestCost = cost;
@@ -199,7 +219,15 @@ public class ToolSet {
                 }
             }
         }
+        if (debug) {
+            ItemStack chosen = player.getInventory().getItem(best);
+            Helper.HELPER.logDebug("  picked " + best + " " + chosen.getItem());
+        }
         return best;
+    }
+
+    private static String fmt(double v) {
+        return String.format("%.3f", v);
     }
 
     /**
