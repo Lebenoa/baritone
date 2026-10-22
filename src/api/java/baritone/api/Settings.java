@@ -679,6 +679,11 @@ public final class Settings {
     public final Setting<Boolean> chatDebug = new Setting<>(false);
 
     /**
+     * Log why each tool was picked by auto tool to chat. Requires chatDebug.
+     */
+    public final Setting<Boolean> toolDebug = new Setting<>(false);
+
+    /**
      * Allow chat based control of Baritone. Most likely should be disabled when Baritone is imported for use in
      * something else
      */
