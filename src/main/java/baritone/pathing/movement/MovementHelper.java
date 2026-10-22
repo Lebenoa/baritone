@@ -651,6 +651,18 @@ public interface MovementHelper extends ActionCosts, Helper {
     }
 
     /**
+     * AutoTool for a specific block, preferring fortune tools of equal speed
+     *
+     * @param ctx The player context
+     * @param b   the blockstate to mine
+     */
+    static void switchToBestToolForPreferFortune(IPlayerContext ctx, BlockState b) {
+        if (Baritone.settings().autoTool.value && !Baritone.settings().assumeExternalAutoTool.value) {
+            ctx.player().getInventory().setSelectedSlot(new ToolSet(ctx.player()).getBestSlot(b.getBlock(), BaritoneAPI.getSettings().preferSilkTouch.value, false, true));
+        }
+    }
+
+    /**
      * AutoTool for a specific block with precomputed ToolSet data
      *
      * @param ctx The player context

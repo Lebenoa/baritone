@@ -289,7 +289,11 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             Optional<Rotation> rot = RotationUtils.reachable(ctx, pos);
             if (rot.isPresent() && isSafeToCancel) {
                 baritone.getLookBehavior().updateTarget(rot.get(), true);
-                MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(pos));
+                if (Baritone.settings().farmPreferFortune.value) {
+                    MovementHelper.switchToBestToolForPreferFortune(ctx, ctx.world().getBlockState(pos));
+                } else {
+                    MovementHelper.switchToBestToolFor(ctx, ctx.world().getBlockState(pos));
+                }
                 if (ctx.isLookingAt(pos)) {
                     baritone.getInputOverrideHandler().setInputForceState(Input.CLICK_LEFT, true);
                 }

@@ -124,6 +124,18 @@ public class ToolSet {
         return false;
     }
 
+    public boolean hasFortune(ItemStack stack) {
+        ItemEnchantments enchantments = stack.getEnchantments();
+        for (Holder<Enchantment> enchant : enchantments.keySet()) {
+            // fortune affects block drops like silk touch, but can be granted
+            // via datapack attribute effects, so check the component directly
+            if (enchant.is(Enchantments.FORTUNE) && enchantments.getLevel(enchant) > 0) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Calculate which tool on the hotbar is best for mining, depending on an override setting,
      * related to auto tool movement cost, it will either return current selected slot, or the best slot.
@@ -137,6 +149,10 @@ public class ToolSet {
     }
 
     public int getBestSlot(Block b, boolean preferSilkTouch, boolean pathingCalculation) {
+        return getBestSlot(b, preferSilkTouch, pathingCalculation, false);
+    }
+
+    public int getBestSlot(Block b, boolean preferSilkTouch, boolean pathingCalculation, boolean preferFortune) {
 
         /*
         If we actually want know what efficiency our held item has instead of the best one
@@ -150,6 +166,7 @@ public class ToolSet {
         double highestSpeed = Double.NEGATIVE_INFINITY;
         int lowestCost = Integer.MIN_VALUE;
         boolean bestSilkTouch = false;
+        boolean bestFortune = false;
         BlockState blockState = b.defaultBlockState();
         for (int i = 0; i < 9; i++) {
             ItemStack itemStack = player.getInventory().getItem(i);
@@ -162,19 +179,23 @@ public class ToolSet {
             }
             double speed = calculateSpeedVsBlock(itemStack, blockState);
             boolean silkTouch = hasSilkTouch(itemStack);
+            boolean fortune = hasFortune(itemStack);
             if (speed > highestSpeed) {
                 highestSpeed = speed;
                 best = i;
                 lowestCost = getMaterialCost(itemStack);
                 bestSilkTouch = silkTouch;
+                bestFortune = fortune;
             } else if (speed == highestSpeed) {
                 int cost = getMaterialCost(itemStack);
                 if ((cost < lowestCost && (silkTouch || !bestSilkTouch)) ||
-                        (preferSilkTouch && !bestSilkTouch && silkTouch)) {
+                        (preferSilkTouch && !bestSilkTouch && silkTouch) ||
+                        (preferFortune && !bestFortune && fortune)) {
                     highestSpeed = speed;
                     best = i;
                     lowestCost = cost;
                     bestSilkTouch = silkTouch;
+                    bestFortune = fortune;
                 }
             }
         }

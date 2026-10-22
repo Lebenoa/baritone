@@ -996,6 +996,12 @@ public final class Settings {
     public final Setting<Integer> farmMaxScanSize = new Setting<>(256);
 
     /**
+     * When harvesting, prefer a fortune tool over other tools of the same speed.
+     * Only has an effect when autoTool is enabled.
+     */
+    public final Setting<Boolean> farmPreferFortune = new Setting<>(true);
+
+    /**
      * When the cache scan gives less blocks than the maximum threshold (but still above zero), scan the main world too.
      * <p>
      * Only if you have a beefy CPU and automatically mine blocks that are in cache
