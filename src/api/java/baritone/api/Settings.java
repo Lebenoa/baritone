@@ -1007,6 +1007,13 @@ public final class Settings {
     public final Setting<Boolean> farmPreferFortune = new Setting<>(true);
 
     /**
+     * Let farming pull seeds, nether wart, cocoa beans and bone meal from the main
+     * inventory into the hotbar when replanting, instead of only using the hotbar.
+     * Independent of allowInventory.
+     */
+    public final Setting<Boolean> farmSearchInventory = new Setting<>(true);
+
+    /**
      * When the cache scan gives less blocks than the maximum threshold (but still above zero), scan the main world too.
      * <p>
      * Only if you have a beefy CPU and automatically mine blocks that are in cache
