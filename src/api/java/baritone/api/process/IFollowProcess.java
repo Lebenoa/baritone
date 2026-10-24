@@ -44,6 +44,14 @@ public interface IFollowProcess extends IBaritoneProcess {
     void pickup(Predicate<ItemStack> filter);
 
     /**
+     * Fight living entities matching this predicate, then pick up their dropped items matching the drop predicate
+     *
+     * @param targetFilter the entity predicate
+     * @param dropFilter   the dropped item predicate
+     */
+    void fight(Predicate<Entity> targetFilter, Predicate<ItemStack> dropFilter);
+
+    /**
      * @return The entities that are currently being followed. null if not currently following, empty if nothing matches the predicate
      */
     List<Entity> following();
