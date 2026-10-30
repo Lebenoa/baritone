@@ -75,7 +75,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
     private int range;
     private BlockPos center;
 
-    // remembers which seed item each broken crop position should be replanted with
+    // remembers which seed item each farmland position should be replanted with (key = the block below the crop)
     private final Map<BlockPos, Item> expectedCrops = new HashMap<>();
 
     private static final List<Item> FARMLAND_PLANTABLE = Arrays.asList(
@@ -282,7 +282,7 @@ public final class FarmProcess extends BaritoneProcessHelper implements IFarmPro
             if (readyForHarvest(ctx.world(), pos, state)) {
                 Harvest harvest = harvestFor(state);
                 if (harvest != null && harvest.seedItem != null && Baritone.settings().replantCrops.value) {
-                    expectedCrops.put(pos, harvest.seedItem);
+                    expectedCrops.put(pos.below(), harvest.seedItem);
                 }
                 toBreak.add(pos);
                 continue;
